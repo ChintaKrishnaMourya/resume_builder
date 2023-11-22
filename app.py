@@ -17,7 +17,7 @@ import re
 import pandas as pd
 
 
-api_key = st.secrets["api_key"]
+api_key = "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"
 API_KEY = api_key
 openai.api_key = api_key
 
@@ -274,8 +274,87 @@ def set_cell_background(cell, fill):
     cell._tc.get_or_add_tcPr().append(shading_elm)
 
 # Function for creating a document from a JSON-like structure
-def create_doc_from_json_template1(json_data, filename):
+# def create_doc_from_json_template1(json_data, filename):
 
+#     doc = Document()
+    
+#     # Set the page margins
+#     section = doc.sections[0]
+#     section.top_margin = Inches(0.5)
+#     section.bottom_margin = Inches(0.5)
+#     section.left_margin = Inches(0.5)
+#     section.right_margin = Inches(0.5)
+
+#     # Add a table for the header
+#     header_table = doc.add_table(rows=1, cols=2)
+#     header_table.autofit = False
+#     header_table.columns[0].width = Inches(4.25)
+#     header_table.columns[1].width = Inches(2.25)
+    
+#     # Populate header table
+#     name_cell = header_table.cell(0, 0) 
+#     name_cell.text = f"{json_data['name']}\n{json_data['social media links'][0]}"
+#     set_cell_background(name_cell, 'ADD8E6')  # Light gray background
+#     contact_cell = header_table.cell(0, 1)
+#     contact_info = f"Contact No: {json_data['phone number']}\nEmail: {json_data['gmail']}\n"
+#     contact_cell.text = contact_info
+#     set_cell_background(contact_cell, '87CEEB')  # Slightly darker gray background
+
+#     # Add content sections with titles
+#     titles = ['educational qualification','skillset and expertise', 'Previous work experience description','certifications','awards and achievements','Explanation of position of responsibilities', 'Explanation of projects', 'years of experience', 'previous job title']
+#     for title in titles:
+#         table = doc.add_table(rows=2, cols=1)
+#         table.autofit = False
+#         table.columns[0].width = Inches(6.5)
+
+#         title_cell = table.cell(0, 0)
+#         # Apply bold to the title and set a light blue background
+#         run = title_cell.paragraphs[0].add_run(title.title())
+#         run.bold = True  # Convert title to title case
+#         set_cell_background(title_cell, 'ADD8E6')  # Dark gray background for title
+
+#         content_cell = table.cell(1, 0)
+#         # Retrieve content from json_data based on title
+#         content = json_data.get(title, 'Content not provided')
+#         print(title,content)
+#         # Special formatting for 'previous work experience description'
+#         if title == 'previous work experience description' and isinstance(content, list):
+#             for item in content:
+#             # Create a paragraph for each experience item
+#                 p = content_cell.add_paragraph(style='ListBullet')
+#                 # Split the item into subtitle and description
+#                 job_title, _, description = item.partition(': ')
+#                 # Add the job title as bold
+#                 p.add_run(job_title + ': ').bold = True
+#                 # Continue with the description
+#                 p.add_run(description)
+#         elif title == 'skillset and expertise' and isinstance(content, list):
+#             # Join the skills with a comma and a space for the 'skillset and expertise' section
+#             content_cell.text = ', '.join(content)
+#         elif isinstance(content, list):
+#             # Add content as bullet points for list-type contents
+#             for item in content:
+#                 content_cell.add_paragraph(item, style='ListBullet')
+#         elif content is None:  # Ensure content is not None
+#             content = []
+#         else:
+#             content_cell.text = content  # Directly add content if not a list
+        
+#         print('/n \n')
+
+#         # Set the space after each table to zero
+#         set_space_after(table.rows[0].cells[0].paragraphs[0], 0)
+#         set_space_after(table.rows[1].cells[0].paragraphs[0], 0)
+
+
+#     # Save the document
+#     doc.save(filename)
+#     # Read the saved file into BytesIO object
+#     with open(filename, "rb") as file:
+#         doc_bytes = BytesIO(file.read())
+#     return doc_bytes
+
+def create_doc_from_json_template1(json_data, filename):
     doc = Document()
     
     # Set the page margins
@@ -292,57 +371,45 @@ def create_doc_from_json_template1(json_data, filename):
     header_table.columns[1].width = Inches(2.25)
     
     # Populate header table
-    name_cell = header_table.cell(0, 0) 
-    name_cell.text = f"{json_data['name']}\n{json_data['social media links'][0]}"
-    set_cell_background(name_cell, 'ADD8E6')  # Light gray background
+    name_cell = header_table.cell(0, 0)
+    name = json_data.get('name', 'Name not provided')
+    social_media_links = json_data.get('social media links', [])
+    social_media_link = social_media_links[0] if social_media_links else "Not provided"
+    name_cell.text = f"{name}\n{social_media_link}"
+    set_cell_background(name_cell, 'ADD8E6')  # Light blue background
+
     contact_cell = header_table.cell(0, 1)
-    contact_info = f"Contact No: {json_data['phone number']}\nEmail: {json_data['gmail']}\n"
+    phone_number = json_data.get('phone number', 'Phone number not provided')
+    gmail = json_data.get('gmail', 'Email not provided')
+    contact_info = f"Contact No: {phone_number}\nEmail: {gmail}\n"
     contact_cell.text = contact_info
-    set_cell_background(contact_cell, '87CEEB')  # Slightly darker gray background
+    set_cell_background(contact_cell, '87CEEB')  # Slightly darker blue background
 
     # Add content sections with titles
-    titles = ['educational qualification','skillset and expertise', 'Previous work experience description','certifications','awards and achievements','Explanation of position of responsibilities', 'Explanation of projects', 'years of experience', 'previous job title']
+    titles = ['educational qualification', 'skillset and expertise', 'Previous work experience description', 
+              'certifications', 'awards and achievements', 'Explanation of position of responsibilities', 
+              'Explanation of projects', 'years of experience', 'previous job title']
+    
     for title in titles:
         table = doc.add_table(rows=2, cols=1)
         table.autofit = False
         table.columns[0].width = Inches(6.5)
 
         title_cell = table.cell(0, 0)
-        # Apply bold to the title and set a light blue background
         run = title_cell.paragraphs[0].add_run(title.title())
         run.bold = True  # Convert title to title case
-        set_cell_background(title_cell, 'ADD8E6')  # Dark gray background for title
+        set_cell_background(title_cell, 'ADD8E6')  # Dark blue background for title
 
         content_cell = table.cell(1, 0)
-        # Retrieve content from json_data based on title
-        content = json_data.get(title, 'Content not provided')
-        print(title,content)
-        # Special formatting for 'previous work experience description'
-        if title == 'previous work experience description' and isinstance(content, list):
-            for item in content:
-            # Create a paragraph for each experience item
-                p = content_cell.add_paragraph(style='ListBullet')
-                # Split the item into subtitle and description
-                job_title, _, description = item.partition(': ')
-                # Add the job title as bold
-                p.add_run(job_title + ': ').bold = True
-                # Continue with the description
-                p.add_run(description)
-        elif title == 'skillset and expertise' and isinstance(content, list):
-            # Join the skills with a comma and a space for the 'skillset and expertise' section
-            content_cell.text = ', '.join(content)
+        content = json_data.get(title)
+        if content is None:
+            content_cell.text = "Content not provided"
         elif isinstance(content, list):
-            # Add content as bullet points for list-type contents
             for item in content:
                 content_cell.add_paragraph(item, style='ListBullet')
-        elif content is None:  # Ensure content is not None
-            content = []
         else:
-            content_cell.text = content  # Directly add content if not a list
-        
-        print('/n \n')
-
-        # Set the space after each table to zero
+            content_cell.text = str(content)  # Ensure content is a string
+            
         set_space_after(table.rows[0].cells[0].paragraphs[0], 0)
         set_space_after(table.rows[1].cells[0].paragraphs[0], 0)
 
@@ -353,8 +420,6 @@ def create_doc_from_json_template1(json_data, filename):
     with open(filename, "rb") as file:
         doc_bytes = BytesIO(file.read())
     return doc_bytes
-
-
 
 
 # Function to set space after a paragraph to zero
@@ -375,11 +440,21 @@ def create_doc_from_json_template2(json_data, filename):
         section.right_margin = Inches(0.5)
     
     # Header with name and contact information
-    doc.add_heading(json_data['name'], level=1)
+    # Header with name and contact information
+    doc.add_heading(json_data.get('name', 'Name Not Provided'), level=1)
     contact_paragraph = doc.add_paragraph()
-    contact_paragraph.add_run(f"Email: {json_data['gmail']} | ")
-    contact_paragraph.add_run(f"Phone: {json_data['phone number']} | ")
-    contact_paragraph.add_run(f"LinkedIn: {json_data['social media links'][0]}\n")
+
+    # Add email and phone number
+    contact_paragraph.add_run(f"Email: {json_data.get('gmail', 'Email Not Provided')} | ")
+    contact_paragraph.add_run(f"Phone: {json_data.get('phone number', 'Phone Not Provided')} | ")
+
+    # Check and add LinkedIn link if available
+    social_media_links = json_data.get('social media links', [])
+    if social_media_links:
+        contact_paragraph.add_run(f"LinkedIn: {social_media_links[0]}\n")
+    else:
+        contact_paragraph.add_run("LinkedIn: Not Provided\n")
+
     contact_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     set_space_after2(contact_paragraph, 0.1)
 
@@ -463,83 +538,6 @@ def set_cell_background(cell, fill):
     cell._tc.get_or_add_tcPr().append(shading_elm)
 
 ## Function to create a two-column table for layout
-# def create_two_column_table(doc, json_data):
-#     table = doc.add_table(rows=1, cols=2)
-#     table.columns[0].width = Cm(5.5)  # Set the width of the left column
-#     table.columns[1].width = Cm(11.5) # Set the width of the right column
-
-#     # Left column content
-#     left_cell = table.cell(0, 0)
-#     set_cell_background(left_cell, "ADD8E6")  # Light blue background
-#     left_paragraph = left_cell.paragraphs[0]
-    
-#     # Adding Name with a larger font to the left column
-#     run = left_paragraph.add_run(json_data['name'] + "\n")
-#     run.bold = True
-#     run.font.size = Pt(14)  # Set font size to 14pt or as desired
-    
-#     # Adding Contact Information
-#     left_paragraph.add_run("Contact Information\n").bold = True
-#     left_paragraph.add_run(f"Email: {json_data['gmail']}\n")
-#     left_paragraph.add_run(f"Phone: {json_data['phone number']}\n")
-#     left_paragraph.add_run(f"LinkedIn: {json_data['social media links'][0]}\n")
-    
-#     # Adding Educational Qualification with a bold title
-#     left_paragraph.add_run("\nEducational Qualification\n").bold = True
-#     for qualification in json_data['educational qualification']:
-#         left_paragraph.add_run(f"• {qualification}\n")
-
-#     # Adding Skills and Expertise with a bold title
-#     left_paragraph.add_run("\nSkillset and Expertise\n").bold = True
-#     # Join the skills with a comma and a space
-#     skills_text = ', '.join(json_data['skillset and expertise'])
-#     left_paragraph.add_run(f"• {skills_text}\n")
-      
-#     # Adding previous job titles with a bold title
-#     left_paragraph.add_run("\nPrevious Job Roles\n").bold = True
-#     for skills in json_data['previous job title']:
-#         left_paragraph.add_run(f"• {skills}\n")
-
-#     # Adding years of experience with a bold title
-#     left_paragraph.add_run("\nYears of Experience\n").bold = True
-#     left_paragraph.add_run(f"• {json_data['years of experience']}\n")
-    
-#     # Adding Certifications with a bold title
-#     left_paragraph.add_run("\nCertifications\n").bold = True
-#     for certification in json_data['certifications']:
-#         left_paragraph.add_run(f"• {certification}\n")
-
-#     # Right column content
-#     right_cell = table.cell(0, 1)
-#     right_paragraph = right_cell.paragraphs[0]
-    
-#     # Adding Previous Work Experience Description with a bold title
-#     right_paragraph.add_run("Previous Work Experience Description\n").bold = True
-#     for experience in json_data['Previous work experience description']:
-#         right_paragraph.add_run(f"• {experience}\n")
-
-#     # Adding Projects with a bold title
-#     right_paragraph.add_run("\nProjects\n").bold = True
-#     for project in json_data['Explanation of projects']:
-#         right_paragraph.add_run(f"• {project}\n")
-
-#     # Adding Awards and Achievements with a bold title
-#     right_paragraph.add_run("\nAwards and Achievements\n").bold = True
-#     for award in json_data['awards and achievements']:
-#         right_paragraph.add_run(f"• {award}\n")
-
-#     # Adding Explanation of Position of Responsibilities with a bold title
-#     right_paragraph.add_run("\nExplanation of Position of Responsibilities\n").bold = True
-#     for responsibility in json_data['Explanation of position of responsibilities']:
-#         right_paragraph.add_run(f"• {responsibility}\n")
-    
-#     # Adding Extracurricular Activities with a bold title
-#     right_paragraph.add_run("\nExtracurricular Activities\n").bold = True
-#     for activity in json_data['extracurriculars']:
-#         right_paragraph.add_run(f"• {activity}\n")
-
-#     return table
-
 def create_two_column_table(doc, json_data):
     table = doc.add_table(rows=1, cols=2)
     table.columns[0].width = Cm(5.5)  # Set the width of the left column
