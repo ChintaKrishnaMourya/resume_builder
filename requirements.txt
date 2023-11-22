@@ -1,0 +1,6 @@
+streamlit
+python-docx
+pdfminer.six==20221105
+openai==0.28.0
+aiohttp
+pandas
