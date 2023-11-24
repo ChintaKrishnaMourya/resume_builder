@@ -17,7 +17,7 @@ import re
 import pandas as pd
 
 
-api_key = "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"
+api_key = "sk-"
 API_KEY = api_key
 openai.api_key = api_key
 
